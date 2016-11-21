@@ -1,19 +1,23 @@
 var express = require('express');
 var app = express();
 var path = require('path');
-var port = process.env.PORT || 3000;
-var connectionString = "postgres://localhost:5432/sigma";
-
-/*** Build out a module to manage our treats requests. ***/
+var bodyParser = require('body-parser');
+var treats = require('./public/routes/treats');
 
 
-app.get('/', function(req, res) {
-  res.sendFile(path.resolve('./server/public/views/index.html'));
+app.use(express.static(__dirname + '/public'));
+
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use('/treats', treats); // catch all requests to /tasks and pass to task module
+
+// GET / - Serve the index file
+app.get('/', function (req, res) {
+  var indexFile = path.join(__dirname, 'public', 'views', 'index.html');
+  res.sendFile(indexFile);
 });
 
-app.use(express.static('./server/public'));
-
-
-app.listen(port, function() {
-  console.log('Server running on port: ', port);
+// Start listening for HTTP requests
+app.listen(3000, function (req, res) {
+  console.log('Now listening on port 3000');
 });
